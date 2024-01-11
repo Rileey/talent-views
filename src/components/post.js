@@ -5,115 +5,119 @@ import '../css/post.modules.css'
 import ReactPlayer from 'react-player'
 // import { Link } from 'react-router-dom'
 import '../css/video.modules.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { getUser } from '../Redux/actions/user'
+import { format } from 'timeago.js'
+import { Link } from 'react-router-dom'
 
 
 
 
-// const formated = (seconds) => {
-//     if (isNaN(seconds)){
-//         return '00:00'
-//     }
-//     const date = new Date(seconds * 1000)
-//     const hh = date.getUTCHours()
-//     const mm = date.getUTCMinutes()
-//     const ss = date.getUTCSeconds().toString().padStart(2, '0')
-//     if (hh){
-//         return `${hh}:${mm.toString().padStart(2, '0')}:${ss}`
-//     }
+const formated = (seconds) => {
+    if (isNaN(seconds)){
+        return '00:00'
+    }
+    const date = new Date(seconds * 1000)
+    const hh = date.getUTCHours()
+    const mm = date.getUTCMinutes()
+    const ss = date.getUTCSeconds().toString().padStart(2, '0')
+    if (hh){
+        return `${hh}:${mm.toString().padStart(2, '0')}:${ss}`
+    }
 
-//     return `${mm}:${ss}`
-// }
+    return `${mm}:${ss}`
+}
 
-const Dashboard = ({video}) => {
+const Dashboard = ({video, post}) => {
 
 //     const [hover, setHover] = useState(false)
 //     const [click, setClick] = useState(false)
 //     const [show, setShow] = useState(false)
 //     const [isLiked, setIsLiked] = useState(false)
 //     const [isUpvoted, setIsUpvoted] = useState(false)
-//     const [timeDisplayFormat, setTimeDisplayFormat] = useState('normal')
+    const [timeDisplayFormat, setTimeDisplayFormat] = useState('normal')
 //     const [upvote, setUpvote] = useState(video.upvotes?.length)
 //     const [like, setLike] = useState(video.likes?.length)
-//     const { user:currentUser, dispatch } = useContext(AuthContext)
-//     const [state, setState] = useState({
-//         playing: false,
-//         muted: true,
-//         volume: 1,
-//         playbackRate: 1.0,
-//         played: 0,
-//         seeking: false,
-//     })
+    const [state, setState] = useState({
+        playing: false,
+        muted: true,
+        volume: 1,
+        playbackRate: 1.0,
+        played: 0,
+        seeking: false,
+    })
 
-//     const {playing, muted, volume, playbackRate, played, seeking} = state
-//     const playerRef = useRef(null)
-//     // const playerContainerRef = useRef(null)
-//     const controlsRef = useRef(null)
 
-//     const handlePlayPause = () => {
-//         setState({...state, playing: !state.playing})
-//     }
+    const {playing, muted, volume, playbackRate, played, seeking} = state
+    const playerRef = useRef(null)
+    // const playerContainerRef = useRef(null)
+    const controlsRef = useRef(null)
 
-//     const handleProgress = (changeState) => {
+    const handlePlayPause = () => {
+        setState({...state, playing: !state.playing})
+    }
 
-//         if(!state.seeking){
-//             setState({...state, ...changeState})
-//         }
-//     }
+    const handleProgress = (changeState) => {
 
-//     const handleMute = () => {
-//         setState({...state, muted: !state.muted})
-//     }
+        if(!state.seeking){
+            setState({...state, ...changeState})
+        }
+    }
 
-//     const handleVolumeChange = (e, newValue) => {
-//         setState({
-//             ...state, 
-//             volume: parseFloat(newValue/100), 
-//             muted: newValue === 0 ? true:false
-//         })
-//     }
+    const handleMute = () => {
+        setState({...state, muted: !state.muted})
+    }
 
-//     const handleSeekChange = (e, newValue) => {
-//         setState({...state, played: parseFloat(newValue/100)})
-//     }
+    const handleVolumeChange = (e, newValue) => {
+        setState({
+            ...state, 
+            volume: parseFloat(newValue/100), 
+            muted: newValue === 0 ? true:false
+        })
+    }
 
-//     const handleSeekMouseDown = (e) => {
-//         setState({...state, seeking: true})
-//     }
+    const handleSeekChange = (e, newValue) => {
+        setState({...state, played: parseFloat(newValue/100)})
+    }
 
-//     const handleSeekMouseUp = (e, newValue) => {
-//         setState({...state, seeking: false})
-//         playerRef.current.seekTo(newValue/100)
-//     }
+    const handleSeekMouseDown = (e) => {
+        setState({...state, seeking: true})
+    }
 
-//     const handleChangeDisplayFormat = () => {
-//         setTimeDisplayFormat(
-//          timeDisplayFormat==='normal'
-//         ?'remaining' : 'normal',)
-//     }
+    const handleSeekMouseUp = (e, newValue) => {
+        setState({...state, seeking: false})
+        playerRef.current.seekTo(newValue/100)
+    }
 
-//     const handleVolumeSeekUp = (e, newValue) => {
-//         setState({
-//             ...state, 
-//             volume: parseFloat(newValue/100), 
-//             muted: newValue === 0 ? true:false
-//         })
-//     }
+    const handleChangeDisplayFormat = () => {
+        setTimeDisplayFormat(
+         timeDisplayFormat==='normal'
+        ?'remaining' : 'normal',)
+    }
 
-//     const handlePlaybackRateChange = (rate) => {
-//         setState({...state, playbackRate: rate})
-//     }
+    const handleVolumeSeekUp = (e, newValue) => {
+        setState({
+            ...state, 
+            volume: parseFloat(newValue/100), 
+            muted: newValue === 0 ? true:false
+        })
+    }
 
-//     const currentTime = playerRef.current 
-//     ? playerRef.current.getCurrentTime() 
-//     : '00:00';
-//     const duration = playerRef.current 
-//     ? playerRef.current.getDuration() 
-//     : '00:00'; 
+    const handlePlaybackRateChange = (rate) => {
+        setState({...state, playbackRate: rate})
+    }
 
-//     const elapsedTime = timeDisplayFormat==='normal' 
-//     ? formated(currentTime) 
-//     : `-${formated(duration - currentTime)}`;
-//     const totalDuration = formated(duration)
+    const currentTime = playerRef.current 
+    ? playerRef.current.getCurrentTime() 
+    : '00:00';
+    const duration = playerRef.current 
+    ? playerRef.current.getDuration() 
+    : '00:00'; 
+
+    const elapsedTime = timeDisplayFormat==='normal' 
+    ? formated(currentTime) 
+    : `-${formated(duration - currentTime)}`;
+    const totalDuration = formated(duration)
 
 
 //     useEffect(() => {
@@ -165,56 +169,56 @@ const Dashboard = ({video}) => {
                         <div className="post-header">
                             <div className="post-left">
                                 <div className="post-info-details">
-                                {/* <Link to={`/profile/${video._creator?._id}`}
+                                <Link to={`/profile/${post?.user?.first_name}`}
                                 style={{display: 'contents'}}
-                                > */}
+                                >
                                     <img className="post-info-image" 
-                                    src={"./stockphoto.jpeg"} 
+                                    src={post?.user?.avatar ||"./stockphoto.jpeg"} 
                                     alt="deji"
                                     />
                                     
                                     <span className="post-info-name">
-                                    Username
+                                    {post?.user?.first_name}
                                     </span>
-                                    {/* </Link> */}
+                                    </Link>
                                 </div>
                             </div>
                         </div>
                         <div className="post-image">
                                         <PostControl
-                                            // ref={controlsRef}
-                                            // onPlayPause={handlePlayPause}
-                                            // playing={playing}
-                                            // muted={muted}
-                                            // onMute={handleMute}
-                                            // onvolumechange={handleVolumeChange}
-                                            // onVolumeSeekUp={handleVolumeSeekUp}
-                                            // volume={volume}
-                                            // playbackRate={playbackRate}
-                                            // onPlaybackRateChange={handlePlaybackRateChange}
-                                            // played={played}
-                                            // onSeek={handleSeekChange}
-                                            // onSeekMouseDown={handleSeekMouseDown}
-                                            // onSeekMouseUp={handleSeekMouseUp}
-                                            // elapsedTime={elapsedTime}
-                                            // totalDuration={totalDuration}
-                                            // onChangeDisplayFormat={handleChangeDisplayFormat}
+                                            ref={controlsRef}
+                                            onPlayPause={handlePlayPause}
+                                            playing={playing}
+                                            muted={muted}
+                                            onMute={handleMute}
+                                            onvolumechange={handleVolumeChange}
+                                            onVolumeSeekUp={handleVolumeSeekUp}
+                                            volume={volume}
+                                            playbackRate={playbackRate}
+                                            onPlaybackRateChange={handlePlaybackRateChange}
+                                            played={played}
+                                            onSeek={handleSeekChange}
+                                            onSeekMouseDown={handleSeekMouseDown}
+                                            onSeekMouseUp={handleSeekMouseUp}
+                                            elapsedTime={elapsedTime}
+                                            totalDuration={totalDuration}
+                                            onChangeDisplayFormat={handleChangeDisplayFormat}
                                             />
                                        
                             {/* <video className="post-imagery" src={video.video[0]?.video} alt="new" controls type="video/mp4"/> */}
 
                             <div className="post-imagery">
                                 <ReactPlayer
-                                // ref={playerRef}
-                                url="" width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
-                                // playing={playing} 
-                                // muted={muted}
-                                // volume={volume}
-                                // playbackRate={playbackRate}
-                                // style={{backgroundColor: 'black'}}
-                                // onProgress={handleProgress}
-                                // width='100%'
-                                // height='100%'
+                                ref={playerRef}
+                                url={post?.url} width="640" height="360" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+                                playing={playing} 
+                                muted={muted}
+                                volume={volume}
+                                playbackRate={playbackRate}
+                                style={{backgroundColor: 'black'}}
+                                onProgress={handleProgress}
+                                width='100%'
+                                height='100%'
                                 />
                                                        
                             </div>
@@ -222,10 +226,10 @@ const Dashboard = ({video}) => {
                         </div>
                         <div className="post-footer">
                             <span className="fullpost-time">
-                                posted at
+                                posted {format(post?.created_at)}
                             </span>
                             <span className="post-footer-caption">
-                                <b>Username:</b> Description
+                                <b>{post?.user?.first_name}:</b> {post?.description}
                             </span>
 
                         </div>

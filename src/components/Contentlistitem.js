@@ -10,11 +10,13 @@ const Contentlistitem = ({ card }) => {
 
     // const trailer = '/fdp.mp4'
     return (
+        <div className='contentt'>
         <div className='content-list-item'>
-            
             <img
-            src="https://images.unsplash.com/photo-1665686374221-1901faa9f3ad?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
+            src={card?.episodes[0]?.thumbnail || '/cinema.jpeg' }
             alt="" />
+        </div>
+        <span className='text'>{card?.name}</span>
         </div>
     )
 }

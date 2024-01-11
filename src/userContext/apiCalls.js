@@ -1,4 +1,5 @@
 import axios from "axios";
+import authHeader from "../services/auth-header";
 // import { deleteMoviesSuccess, deleteMoviesFailure, deleteMoviesStart } from "./movieActions";
 import { deleteUsersFailure, deleteUsersStart, deleteUsersSuccess, getUsersFailure, getUsersStart, getUsersSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from "./userActions";
 
@@ -6,12 +7,8 @@ import { deleteUsersFailure, deleteUsersStart, deleteUsersSuccess, getUsersFailu
 export const getUsers = async (dispatch) => {
     dispatch(getUsersStart());
     try {
-        const res = await axios.get('/users', {
-            headers: {
-                token: 'Bearer '+ JSON.parse(localStorage.getItem('user')).accessToken 
-            }
-        });
-        dispatch(getUsersSuccess(res.data))
+        const {data} = await axios.get('/user/profile', { headers: authHeader() });
+        dispatch(getUsersSuccess(data?.data))
     } catch (err) {
         dispatch(getUsersFailure());
     }

@@ -12,20 +12,39 @@ import { AuthContext } from '../authContext/authContext';
 import ProfileVideo from '../components/profileVideo'
 import ProfilePostModal from '../components/profilePostModal'
 import Media from "react-media"
+import { API_URL } from '../services/user.service';
+import authHeader from '../services/auth-header';
+import { getUser } from '../Redux/actions/user';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 
 const Profile = (match) => {
-    const { user: currentUser } = useContext(AuthContext)
-    const [ user, setUser ] = useState([])
+
+    
     const [video, setVideo] = useState([])
     const [profilePicture, setProfilePicture] = useState([])
     const [hovered, setHovered] = useState(false)
     const [myPosts, setMyPosts] = useState([])
     const [show, setShow] = useState(false)
+    const [profile, setProfile] = useState({})
     const [searchTerm, setSearchTerm] = useState("")
-    const {username} = useParams()
-    const result = decodeURI(username)
+    const {id} = useParams()
+    // const {dispatch, user} = useContext(AuthContext)
+    const [isScrolled, setisScrolled] = useState(false);
+    // const profile = user?.data?.user
+    // const result = decodeURI(username)
+
+    useEffect(()=> {
+        const getUser = async () => {
+            const res = await axios.get(API_URL + 'user/' + id, { headers: authHeader() })
+            setProfile(res?.data?.data?.user)
+        }
+        getUser()
+    }, [id])
+
+const posts = profile?.posts
+console.log(profile)
 
     return(
         <>
@@ -35,15 +54,15 @@ const Profile = (match) => {
                     <div className="me-left">
                         <div className="left-top">
                         <div className="me-profile-img" >
-                            <img className="me-img" src={"../stockphoto.jpeg"} alt="" />    
+                            <img className="me-img" src={profile?.avatar || "../stockphoto.jpeg"} alt="" />    
                         </div>
                         <div className="me-profile-names">
-                            <span className="me-name">Username</span>
+                            <span className="me-name">{profile?.name}</span>
                         </div>
                         </div>
                         <div className="left-bottom">
                         <div className="me-bottom">
-                        <span className="bio">About</span>
+                        <span className="bio">{profile?.bio || 'Tell us who you are'}</span>
                         </div>
                         </div>
                     </div>
@@ -54,7 +73,7 @@ const Profile = (match) => {
                            </div>
                            <div className="me-numbers">
                                 <span className="large-number">
-                                  0
+                                  {profile?.posts?.length}
                                 </span>
                                 <span className="small-caption">Posts</span>
                            </div>                         
@@ -65,7 +84,7 @@ const Profile = (match) => {
                            </div>
                            <div className="me-numbers">
                                 <span className="large-number">
-                                   0
+                                   {profile?.metrics?.followers}
                                     </span>
                                 <span className="small-caption">Followers</span>
                             </div> 
@@ -99,12 +118,33 @@ const Profile = (match) => {
 
                 <div className="me-posts-container">
                     <div className="me-many-posts">
-                        <ProfileVideo />
-                        <ProfileVideo />
-                        <ProfileVideo />
+                    <Media query = '(min-width: 950px)'>
+                  {
+                    matches => {
+                      return matches 
+                      ? (
+                        <>
+                        {profile?.posts?.map((post)=> (
+                            <Link to={`/profile/${profile.id}/${post.id}`}>
+                            <div key={post.id} className="me-content-container">
+                                 <ProfileVideo post={post} />
+                            </div>
+                            </Link>
+                        ))}
+                         </>
+                      ) : (
+                        <>
+                        {profile?.posts?.map((post)=>(
+                            <ProfileVideo key={post?.id} post={post} />
+                        ))}
+                        </>
+                      )}}
+                      </Media>
+                        {/* <ProfileVideo />
+                        <ProfileVideo /> */}
                     </div>
                     <Routes >
-                        <Route exact path="/:id" element={<ProfilePostModal />} />
+                        <Route exact path="/:id" element={<ProfilePostModal profile={profile} posts={posts} />} />
                     </Routes >
                 </div>
             </div>

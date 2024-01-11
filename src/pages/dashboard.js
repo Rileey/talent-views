@@ -9,6 +9,9 @@ import Footer from '../components/footer'
 import Modal from '../components/modal'
 import Post from '../components/post'
 import Media from "react-media"
+import { API_URL } from '../services/user.service';
+import authHeader from '../services/auth-header';
+import { AuthContext } from '../authContext/authContext';
 // import { AuthContext } from '../authContext/authContext'
 
 const Dashboard = () => {
@@ -17,7 +20,17 @@ const Dashboard = () => {
     const [stack, setStack] = useState(false)
     const [show, setShow] = useState(false)
     const [post, setPost] = useState([])
-    // const {user} = useContext(AuthContext)
+    // const [user, setUser] = useState({})
+    const {user} = useContext(AuthContext)
+    const profile = user?.data?.user
+
+    useEffect(()=> {
+        const getPosts = async () => {
+            const res = await axios.get(API_URL + 'post/random', { headers: authHeader() })
+            setPost(res?.data?.data)
+        }
+        getPosts()
+    }, [])
 
 
     return(
@@ -39,7 +52,7 @@ const Dashboard = () => {
                         </div>
                     </Link>
                         
-                        <div className="side-log-o" style={{textDecoration: 'none', color: '#ff7e00', margin: '20px 0'}} >
+                        <div className="side-log-o" style={{textDecoration: 'none', color: '#ff7e00', margin: '20px 0'}} onClick={()=>setShow(true)}>
                             <Create className='comp' /> 
                             <span className='top-wordss'>Upload Video</span>
                         </div>
@@ -57,11 +70,14 @@ const Dashboard = () => {
             <div className="dashboard-container">
             
                 <div className="timeline-container">
+                    {post?.map((post)=>(
+                        <Post post={post}/>
+                    ))}
+            
+            {/* <Post/>
             <Post/>
             <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
+            <Post/> */}
            
                 </div>
             </div>
@@ -69,7 +85,7 @@ const Dashboard = () => {
             
                         {
                             show && (
-                                <Modal />
+                                <Modal profile={profile}/>
                             )
                         }
         </div>

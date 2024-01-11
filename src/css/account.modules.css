@@ -99,6 +99,13 @@
     align-items: center;
 }
 
+.seasons {
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    /* margin: 10px 0; */
+}
+
 .joined {
     font-size: 13px;
     font-weight: 600;

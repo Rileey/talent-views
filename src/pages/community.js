@@ -4,16 +4,25 @@ import { Link, useHistory, useLocation } from 'react-router-dom'
 import Navbar from '../components/navbar'
 import PostModal from '../components/postModal'
 import '../css/community.modules.css'
-
 import Video from '../components/video'
-
 import { Routes, Route } from 'react-router-dom'
+import { API_URL } from '../services/user.service'
+import axios from 'axios'
+import authHeader from '../services/auth-header'
+import { useDispatch, useSelector } from 'react-redux'
+import { getPost } from '../Redux/actions/post'
 
-
-// Modal.setAppElement('#root')
 
 const Community = () => {
     const [searchTerm, setSearchTerm] = useState("")
+    const dispatch = useDispatch();
+    const posts = useSelector(state => state?.post?.posts);
+    console.log(posts)
+
+    useEffect(() => {
+        dispatch(getPost());
+    }, [dispatch]);
+    
     return(
                 <>
                   <div className="community-container" >
@@ -33,19 +42,18 @@ const Community = () => {
                           </div>
                       </div>
                       <div className="premium-container" >
-                          <div className="video-list" >
-                          <Video/>
-                          <Video/>
-                          <Video/>
-                          <Video/>
-                          <Video/>
-                          <Video/>
-                          </div>
+                        <div className="video-list" >
+                        {posts?.map((post)=>(
+                            <Link to={{pathname:`/community/${post.id}`, post: post}}> 
+                                <Video key={post?.id} post={post}/>
+                            </Link>
+                        ))}
+                        </div>
                       </div>
           
           
                   <Routes >
-                      <Route exact path="/:id" element={<PostModal />}/>
+                      <Route exact path="/:id" element={<PostModal posts={posts}/>}/>
                   </Routes >
                       
                   </div>

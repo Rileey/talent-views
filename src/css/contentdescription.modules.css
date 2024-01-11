@@ -133,6 +133,7 @@ film-details > span > p{
 }
 
 .film-content-container {
+    cursor: pointer;
     overflow-y: scroll;
     width: 100%;
     display: flex;
@@ -141,14 +142,19 @@ film-details > span > p{
     border-bottom: 0.5px solid white;
 }
 
-.film-content-container:hover {
+/* .film-content-container:hover {
     background-color: rgb(54, 54, 54);
-}
+} */
 
 .img {
+    border: 1px solid white;
     display: flex;
-    position: relative;
-    padding: 20px;
+    /* flex-direction: column; */
+    margin: 2px 0;
+}
+
+.img:hover {
+    background-color: rgb(54, 54, 54);
 }
 
 .featured-jumbotron {

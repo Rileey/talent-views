@@ -160,6 +160,17 @@
 
 .form-group {
     margin-bottom: 10px;
+    position: relative;
+}
+
+.visibility {
+    position: absolute;
+    top: 30px;
+}
+
+.visibilities {
+    position: absolute;
+    top: 30px;
 }
 
 .labels {

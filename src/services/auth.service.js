@@ -23,7 +23,6 @@ const Login = async (email, password) => {
         if (response?.data) {
           localStorage.setItem("user", JSON.stringify(response.data));
           const user = JSON.parse(localStorage.getItem('user'));
-          getUserBoard();
         }
         return response.data;
       });

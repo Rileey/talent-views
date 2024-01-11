@@ -69,7 +69,7 @@ const Login = () => {
         if (checkBtn.current.context._errors.length === 0) {
           dispatch(login(email, password))
             .then(() => {
-              // navigate("/");
+              navigate("/");
             })
             .catch(() => {
               setLoading(false);
@@ -83,9 +83,6 @@ const Login = () => {
         return <Navigate to="/" />;
       }
 
-
-
-    
     return (
         <div className='log-login' 
         style=
@@ -111,9 +108,9 @@ const Login = () => {
                             <Input type={show ? "text" : "password"} className="form-control" name="password" placeholder='Please input your password' value={password} onChange={onChangePassword} validations={[required]}/>
                             {
                                 show ? (
-                                    <span className='visibility' onClick={handleShowHide}><Visibility /></span>
+                                    <span className='visible' onClick={handleShowHide}><Visibility /></span>
                                 ) : (
-                                    <span className='visibility' onClick={handleShowHide}><VisibilityOff /></span>
+                                    <span className='visible' onClick={handleShowHide}><VisibilityOff /></span>
                                 )
                             }
                         </div>

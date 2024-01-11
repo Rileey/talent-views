@@ -16,6 +16,13 @@ const ListItem = ({ index, item }) => {
   const [caption, setCaption] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
+  function time_convert(num)
+    { 
+    const hours = Math.floor(num / 60).toFixed(2);  
+    const minutes = num % 60;
+    return `${hours}:${minutes}`;         
+    }
+
   // useEffect(() => {
 
   //     const getVideo = async () => {
@@ -79,7 +86,6 @@ const ListItem = ({ index, item }) => {
       <Media query='(min-width: 769px)'>
         {(matches) => {
           return matches ? (
-            // <Link to={`/content/${caption._id}`}>
             <div className='list-item-container'>
               <div
                 className='listItem'
@@ -89,7 +95,7 @@ const ListItem = ({ index, item }) => {
               >
                 <img
                   className='list-image'
-                  src='https://images.unsplash.com/photo-1665686374221-1901faa9f3ad?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80'
+                  src={item?.thumbnail}
                   alt=''
                 />
 
@@ -97,7 +103,7 @@ const ListItem = ({ index, item }) => {
                   <>
                     <video
                       className='listVideo'
-                      src=''
+                      src={item?.video}
                       width='640'
                       height='360'
                       frameborder='0'
@@ -109,17 +115,15 @@ const ListItem = ({ index, item }) => {
                     <div className='itemInfo'>
                       <div className='itemIcons'>
                         <span className='orange'>
-                          <span className='now'>Movie</span>
+                          <span className='now'>{item?.name}</span>
                         </span>
                       </div>
-                      {/* <div className="itemInfoTop"> */}
                       <div className='item-desc'>
-                        <span>2 hr</span>
-                        <span className='limit'>+17</span>
-                        <span>1994</span>
+                        <span>{time_convert(item?.duration)}</span>
+                        <span className='limit'>+{item?.age_rating}</span>
                       </div>
-                      <div className='list-item-caption'>A Movie</div>
-                      <div className='genre'>Drama</div>
+                      <div className='list-item-caption'>{item?.description}</div>
+                      <div className='genre'>{item?.genre}</div>
                     </div>
                   </>
                 )}
@@ -132,7 +136,7 @@ const ListItem = ({ index, item }) => {
               <div className='listItem-sm'>
                 <img
                   className='list-image'
-                  src='https://images.unsplash.com/photo-1665686374221-1901faa9f3ad?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80'
+                  src={item?.thumbnail}
                   alt=''
                 />
               </div>

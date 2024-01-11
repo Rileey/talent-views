@@ -8,140 +8,98 @@ import ProfileModal from '../components/profileModal'
 import { Link, useParams } from 'react-router-dom'
 import CameraAltRoundedIcon from '@mui/icons-material/CameraAltRounded';
 import Profile from '../pages/profile'
+import { API_URL } from '../services/user.service'
+import { useDispatch, useSelector } from 'react-redux'
+import { getUser } from '../Redux/actions/user'
 
 const Account = () => {
-
-    const { user, error, dispatch } = useContext(AuthContext)
     const [image, setImage] = useState({})
-    const [person, setPerson] = useState({})
-    const [file, setFile] = useState(false)
+    const [profile, setProfile] = useState({})
     const [message, setMessage] = useState('')
     const [submitted, setSubmitted] = useState(false)
-    const [profile, setProfile] = useState([])
-    const [loading, setLoading] = useState(false)
-    const [show, setShow] = useState(false)
     const [name, setName] = useState(false)
     const [number, setNumber] = useState(false)
     const [bio, setBio] = useState(false)
-    const {username} = useParams()
-    const result = decodeURI(username)
-
-    useEffect(() => {
-        const getPerson = async () => {
-            const res = await axios.get(`/users/find/?username=${result}`)
-            setProfile(res.data)
-        }
-        getPerson()
-    }, [result])
+    const [show, setShow] = useState(false)
+    const [loading, setLoading] = useState(false)
     
 
-    const date = new Date(user.createdAt)
-    const joined = date.getDate()  + '/' + date.getMonth() + '/' + date.getFullYear()
+    const dispatch = useDispatch();
+    const user = useSelector(state => state?.user?.user);
+
+    useEffect(() => {
+        dispatch(getUser());
+    }, []);
+
+    const date = (params) => {
+        const time = new Date(params) 
+        return time?.getDate() + '/' + time?.getMonth() + '/' + time?.getFullYear()
+    }
 
     const handleChange = (e) => {
         const value = e.target.value
-        setPerson({...person, [e.target.name]: value})
+        setProfile({...profile, [e.target.name]: value})
     }
 
-    if (image === {}) {
-        return null
-    }
-
-    if (profile.length === 0) {
+    if (!image || image === {}){
         return null
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
-        setSubmitted(true)
+        // setSubmitted(true)
              let data = new FormData();
 
-            data.append('userId', user._id) 
-            if(person.username){
-                data.append('username', person.username)
-            }
-            if(person.phone) {
-            data.append('phone', person.phone)
-            }
-            if(person.about) {
-            data.append('about', person.about)
-            }
-            if (!image) {
-                data.append('profilePicture', person.profilePicture[0]?.profilePicture)
-            }else {
+            data.append('id', user.id) 
+            data.append('first_name', user.first_name)
+            data.append('phone_number', user.phone_number)
+            data.append('bio', user.bio)
             for (let i = 0; i < image.length; i++) {
                 data.append('profilePicture', image[i], image[i].name)
             }
             try {
-                await axios.put(`/users/${user._id}`, data )
+                await axios.put(`${API_URL}user/${user.id}`, data )
                 setLoading(false)
-                if (error){
-                    setMessage('Username has been TAKEN!!!')
-                    console.log('just error---', error)
-                }
                 window.location.reload()
             } catch (err) {
                 console.log(err);
             }
-        } 
-            
     }
 
-    
 
     return(
-        username !== user.username ? <Link to={`/profile/${username}`}><Profile /></Link> : 
         <>
         <Navbar />
         {
-                            show && (
-                                <ProfileModal
-                                //  post={post} 
-                                // profilePicture={profilePicture}
-                                 closeModal={setShow} show={show}/>
-                            )
-                        }
+            show && (
+                <ProfileModal closeModal={setShow} show={show}/>
+            )
+        }
         <div className="account-head">
             <div className="account-body">
                 <div className="user-notice">
                     <div className="me-img-container-s  modImage" >
                     <div className="image-caption-s">
-                    <img className="account-image" src={profile?.profilePicture[0]?.profilePicture || "../stockphoto.jpeg"} alt=""  cache={false}/>
-                    <input type="file" id='image' name="profilePicture" className='modd-image' accept= "image/png, image/jpeg" onChange={(e)=>{
-                        setImage(e.target.files)
-                        setFile(true)
-                    }}/>
+                    <img className="account-image" src={user?.avatar || "../stockphoto.jpeg"} alt=""  cache={false}/>
+                    <input type="file" id='image' name="profilePicture" className='modd-image' accept= "image/png, image/jpeg" 
+                    onChange={(e)=>setImage(e?.target?.files)}/>
                     <div className="moddLogo">
                         <CameraAltRoundedIcon />
                     </div>
                    
                 </div>
-                {
-                    loading ? (
-                <div className="end" >
-                    <div class="loader"></div>
-                    <input type='button' className='account-btn' value='saving...' onClick={handleSubmit}/>
-                </div> 
-                    ) : (
                     <div className="end" >
-                        <div className="cap">
-                         {
-                    file ? (
-                <span className="uploade-d">{image[0]?.name}</span>
-                ) : (null)
-                }
-                        <input type='button' className='account-btn' value='Save' onClick={handleSubmit}/>
-                        </div>
+                        <p>{image[0]?.name}</p>
+                        {loading ? <div class="loader"></div> : null}
+                        <input type='button' className='account-btn' value={loading ? "loading..." : "Save"}/>
                     </div> 
-                    ) 
-                }
-                        </div>
+                </div>
                     <span className="account">
-                        Hello {profile.username}
+                        Hello {user?.first_name}
                     </span>
                     <span className="joined">
-                        Joined {joined}
+                        Joined {date(user?.created_at)}
                     </span>
                     <span className="notice-details">
                         Visit your account at talentcroft.com to update your payment
@@ -153,55 +111,44 @@ const Account = () => {
                 <span className="billing">
                    <b> MEMBERSHIP AND BILLING </b>
                 </span>
-                <span className="use-r billing">email: <b>{profile.email}</b></span>
-                <span className="use-r billing">phone: <b>+234 {profile.phoneNumber}</b></span>
+                <span className="use-r billing">email: <b>{user?.email}</b></span>
+                <span className="use-r billing">phone: <b>{user?.phone_number}</b></span>
                 <hr />
-                {
-                    name ? (
-                        <div className="change-container">
-                            {
-                                submitted && error ? (
-                                    <input type="text" name="username" id="" placeholder={message} className="mod-input" onChange={handleChange} />
-                                ) : (
-                                    <input type="text" name="username" id="" placeholder={"Change username from " +profile.username + " ?"} className="mod-input" onChange={handleChange} />
-                                )
+                        <div className="change-container" >
+                            <div className='seasons' onClick={()=>setName(true)}>
+                            {name ? 
+                            <input type="text" name="first_name" id="" placeholder={"Change username from " + user?.first_name + " ?"} className="mod-input" onChange={handleChange} /> : 
+                            <span className='user-action' >Change Username</span>
                             }
-                            
-                            <input type="button" value="Back" className="go-back" onClick={()=>setName(false)} />
+                            </div>
+                            {name ? <input type="button" value="Back" className="go-back" onClick={()=>setName(false)}/>: null}      
                         </div>
-                    ) : (
-                        <span className='user-action' onClick={()=>setName(true)}>Change Username</span>
-                    )
-                }
                 <hr />
-                {
-                    number ? (
-                        <div className="change-container">
-                            <input type="number" name="phone" id="" placeholder={"Change number from " +profile.phoneNumber + " ?"} className="mod-input" onChange={handleChange} />
-                            <input type="button" value="Back" className="go-back" onClick={()=>setNumber(false)} />
+                        <div className="change-container" >
+                            <div className='seasons' onClick={()=>setNumber(true)}>
+                            {number ? 
+                            <input type="number" name="phone_number" id="" placeholder={"Change number from " + user?.phone_number + " ?"} className="mod-input" onChange={handleChange} /> : 
+                            <span className='user-action' >Change Phone Number</span>
+                            }
+                            </div>
+                            {number ? <input type="button" value="Back" className="go-back" onClick={()=>setNumber(false)}/>: null}    
                         </div>
-                    ) : (
-                        <span className='user-action' onClick={()=>setNumber(true)}>Change Phone Number</span>
-                    )
-                }
                 <hr />
-                {
-                    bio ? (
-                        <div className="change-container">
-                            <input type="text" name="about" id="" placeholder={"Tell us about " +profile.username } className="mod-input" onChange={handleChange} />
-                            <input type="button" value="Back" className="go-back" onClick={()=>setBio(false)} />
+                        <div className="change-container" >
+                            <div className='seasons' onClick={()=>setBio(true)}>
+                            {bio ? 
+                            <input type="number" name="bio" id="" placeholder={"Change your bio ?"} className="mod-input" onChange={handleChange} /> : 
+                            <span className='user-action' >Update your Bio</span>
+                            }
+                            </div>
+                            {bio ? <input type="button" value="Back" className="go-back" onClick={()=>setBio(false)}/>: null}    
                         </div>
-                    ) : (
-                        <span className='user-action' onClick={()=>setBio(true)}>Update Bio</span>
-                    )
-                }
                 <hr />
                 <span className='user-action' onClick={()=>setShow(true)}>Change Password</span>
                 <hr />
-                
                 <span className="billing">Card Details</span>
                 <div className="user-card">
-                <img className='mastercard' src={card} alt="" srcset="" />
+                {/* <img className='mastercard' src={card} alt="" srcset="" /> */}
                 <span className="billing">.... .... .... 2008</span>
                 </div>
                 <span className="billing">Your next billing date is ---</span>

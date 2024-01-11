@@ -1,14 +1,16 @@
 import axios from "axios";
+import { useState } from "react";
 import authHeader from "./auth-header";
 
-const API_URL = "http://localhost:8000/api/";
+export const API_URL = "http://localhost:8000/api/";
+
 
 const getPublicContent = () => {
   return axios.get(API_URL + "all");
 };
 
 const getUserBoard = () => {
-  return axios.get(API_URL + "user", { headers: authHeader() });
+  return axios.get(API_URL + "user/profile", { headers: authHeader() })
 };
 
 const getModeratorBoard = () => {

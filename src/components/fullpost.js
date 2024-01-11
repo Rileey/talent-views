@@ -14,28 +14,34 @@ import ReactPlayer from 'react-player'
 import { AuthContext } from '../authContext/authContext';
 import image from '../images/stockphoto.jpeg'
 import PostControl from '../components/postControl'
+import Video from './video';
+import { API_URL } from '../services/user.service';
 
 
-// const formated = (seconds) => {
-//     if (isNaN(seconds)){
-//         return '00:00'
-//     }
-//     const date = new Date(seconds * 1000)
-//     const hh = date.getUTCHours()
-//     const mm = date.getUTCMinutes()
-//     const ss = date.getUTCSeconds().toString().padStart(2, '0')
-//     if (hh){
-//         return `${hh}:${mm.toString().padStart(2, '0')}:${ss}`
-//     }
+const formated = (seconds) => {
+    if (isNaN(seconds)){
+        return '00:00'
+    }
+    const date = new Date(seconds * 1000)
+    const hh = date.getUTCHours()
+    const mm = date.getUTCMinutes()
+    const ss = date.getUTCSeconds().toString().padStart(2, '0')
+    if (hh){
+        return `${hh}:${mm.toString().padStart(2, '0')}:${ss}`
+    }
 
-//     return `${mm}:${ss}`
-// }
+    return `${mm}:${ss}`
+}
 
 
-const Fullpost = ({user, post}) => {
+const Fullpost = ({profile, post}) => {
 
     
-// console.log('$$$$$$Fullpost$$$$$$', post)
+// console.log('$$$$$$Fullpost$$$$$$', post, profile)
+
+const followers = profile?.followers?.filter(item => item.follower_id === post?.user_id);
+const following = profile?.following?.filter(item => item.following_id === post?.user_id)
+
 
     const history = useNavigate()
     const [click, setClick] = useState(false)
@@ -43,11 +49,11 @@ const Fullpost = ({user, post}) => {
     // const [post, setPost] = useState([])
     const [isHovered, setIsHovered] = useState(false)
     const [isLiked, setIsLiked] = useState(false)
-    // const [timeDisplayFormat, setTimeDisplayFormat] = useState('normal')
+    const [timeDisplayFormat, setTimeDisplayFormat] = useState('normal')
     // const [isUpvoted, setIsUpvoted] = useState(false)
     // const [profilePicture, setProfilePicture] = useState('')
-    // const 
-    // {user:currentUser, dispatch } = useContext(AuthContext)
+    // const {user:currentUser, dispatch } = useContext(AuthContext)
+    // const user = currentUser?.data?.user
     // const [followUser, setFollowUser] = useState(user.following?.includes(post._creator?._id))
     // const [like, setLike] = useState(post.likes?.length)
     // const [upvote, setUpvote] = useState(post.upvotes?.length)
@@ -62,78 +68,77 @@ const Fullpost = ({user, post}) => {
         seeking: false,
     })
 
-    // const {playing, muted, volume, playbackRate, played, seeking} = state
-    // const playerRef = useRef(null)
-    // // const playerContainerRef = useRef(null)
-    // const controlsRef = useRef(null)
+    const {playing, muted, volume, playbackRate, played, seeking} = state
+    const playerRef = useRef(null)
+    // const playerContainerRef = useRef(null)
+    const controlsRef = useRef(null)
 
-    // const handlePlayPause = () => {
-    //     setState({...state, playing: !state.playing})
-    // }
+    const handlePlayPause = () => {
+        setState({...state, playing: !state.playing})
+    }
 
-    // const handleProgress = (changeState) => {
+    const handleProgress = (changeState) => {
 
-    //     if(!state.seeking){
-    //         setState({...state, ...changeState})
-    //     }
-    // }
+        if(!state.seeking){
+            setState({...state, ...changeState})
+        }
+    }
 
-    // const handleMute = () => {
-    //     setState({...state, muted: !state.muted})
-    // }
+    const handleMute = () => {
+        setState({...state, muted: !state.muted})
+    }
 
-    // const handleVolumeChange = (e, newValue) => {
-    //     setState({
-    //         ...state, 
-    //         volume: parseFloat(newValue/100), 
-    //         muted: newValue === 0 ? true:false
-    //     })
-    // }
+    const handleVolumeChange = (e, newValue) => {
+        setState({
+            ...state, 
+            volume: parseFloat(newValue/100), 
+            muted: newValue === 0 ? true:false
+        })
+    }
 
-    // const handleSeekChange = (e, newValue) => {
-    //     setState({...state, played: parseFloat(newValue/100)})
-    // }
+    const handleSeekChange = (e, newValue) => {
+        setState({...state, played: parseFloat(newValue/100)})
+    }
 
-    // const handleSeekMouseDown = (e) => {
-    //     setState({...state, seeking: true})
-    // }
+    const handleSeekMouseDown = (e) => {
+        setState({...state, seeking: true})
+    }
 
-    // const handleSeekMouseUp = (e, newValue) => {
-    //     setState({...state, seeking: false})
-    //     playerRef.current.seekTo(newValue/100)
-    // }
+    const handleSeekMouseUp = (e, newValue) => {
+        setState({...state, seeking: false})
+        playerRef.current.seekTo(newValue/100)
+    }
 
-    // const handleChangeDisplayFormat = () => {
-    //     setTimeDisplayFormat(
-    //      timeDisplayFormat==='normal'
-    //     ?'remaining' : 'normal',)
-    // }
+    const handleChangeDisplayFormat = () => {
+        setTimeDisplayFormat(
+         timeDisplayFormat==='normal'
+        ?'remaining' : 'normal',)
+    }
 
-    // const handleVolumeSeekUp = (e, newValue) => {
-    //     setState({
-    //         ...state, 
-    //         volume: parseFloat(newValue/100), 
-    //         muted: newValue === 0 ? true:false
-    //     })
-    // }
+    const handleVolumeSeekUp = (e, newValue) => {
+        setState({
+            ...state, 
+            volume: parseFloat(newValue/100), 
+            muted: newValue === 0 ? true:false
+        })
+    }
 
-    // const handlePlaybackRateChange = (rate) => {
-    //     setState({...state, playbackRate: rate})
-    // }
+    const handlePlaybackRateChange = (rate) => {
+        setState({...state, playbackRate: rate})
+    }
     
 
-    // const currentTime = playerRef.current 
-    // ? playerRef.current.getCurrentTime() 
-    // : '00:00';
-    // const duration = playerRef.current 
-    // ? playerRef.current.getDuration() 
-    // : '00:00'; 
+    const currentTime = playerRef.current 
+    ? playerRef.current.getCurrentTime() 
+    : '00:00';
+    const duration = playerRef.current 
+    ? playerRef.current.getDuration() 
+    : '00:00'; 
 
-    // const elapsedTime = timeDisplayFormat==='normal' 
-    // ? formated(currentTime) 
-    // : `-${formated(duration - currentTime)}`;
-    // const totalDuration = formated(duration)
-
+    const elapsedTime = timeDisplayFormat==='normal' 
+    ? formated(currentTime) 
+    : `-${formated(duration - currentTime)}`;
+    const totalDuration = formated(duration)
 
     // check if user has liked the post already
     // useEffect(() => {
@@ -250,17 +255,17 @@ const Fullpost = ({user, post}) => {
     
 
 
-// const handleIcon = async() => {
-//     try {
-//         await axios.delete(`/posts/${post._id}`)
-//         history(`/profile/${user._id}`)
-//         window.location.reload()
+const handleIcon = async() => {
+    try {
+        await axios.delete(`${API_URL}post/${post.id}`)
+        // history(`/profile/${post?.user.id}`)
+        history("/community")
+        window.location.reload()
         
-//     } catch (err) {
-//         console.log(err)
-//     }
-// }
-
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 return(
     <>
@@ -269,71 +274,74 @@ return(
         >
             <div className="fullpost">
                 <div className="fullpost-img-container"
-                // onMouseEnter={()=>setShow(true)}
-                // onMouseLeave={()=>setShow(false)}
+                onMouseEnter={()=>setShow(true)}
+                onMouseLeave={()=>setShow(false)}
                 >
                    
                     {/* <video id=""className="fullpost-img" src={vid} alt="new stuff" type="mp4" controls/> */}
                     <ReactPlayer
-                    // ref={playerRef}
-                    url="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
-                    // playing={playing} 
-                    // muted={muted}
-                    // volume={volume}
-                    // playbackRate={playbackRate}
-                    // style={{backgroundColor: 'black'}}
-                    // onProgress={handleProgress}
-                    // width='100%'
-                    // height='100%'
+                    ref={playerRef}
+                    url={post?.url} 
+                    frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+                    playing={playing} 
+                    muted={muted}
+                    volume={volume}
+                    playbackRate={playbackRate}
+                    style={{backgroundColor: 'black'}}
+                    onProgress={handleProgress}
+                    width='100%'
+                    height='100%'
                     />
+                    
 
             {show && (
                 <PostControl
                 // film={film}
-                // ref={controlsRef}
-                // onPlayPause={handlePlayPause}
-                // playing={playing}
+                ref={controlsRef}
+                onPlayPause={handlePlayPause}
+                playing={playing}
                 // onRewind={handleRewind}
                 // onFastForward={handleFastForward}
-                // muted={muted}
-                // onMute={handleMute}
-                // onvolumechange={handleVolumeChange}
-                // onVolumeSeekUp={handleVolumeSeekUp}
-                // volume={volume}
-                // playbackRate={playbackRate}
-                // onPlaybackRateChange={handlePlaybackRateChange}
-                // played={played}
-                // onSeek={handleSeekChange}
-                // onSeekMouseDown={handleSeekMouseDown}
-                // onSeekMouseUp={handleSeekMouseUp}
-                // elapsedTime={elapsedTime}
-                // totalDuration={totalDuration}
-                // onChangeDisplayFormat={handleChangeDisplayFormat}
+                muted={muted}
+                onMute={handleMute}
+                onvolumechange={handleVolumeChange}
+                onVolumeSeekUp={handleVolumeSeekUp}
+                volume={volume}
+                playbackRate={playbackRate}
+                onPlaybackRateChange={handlePlaybackRateChange}
+                played={played}
+                onSeek={handleSeekChange}
+                onSeekMouseDown={handleSeekMouseDown}
+                onSeekMouseUp={handleSeekMouseUp}
+                elapsedTime={elapsedTime}
+                totalDuration={totalDuration}
+                onChangeDisplayFormat={handleChangeDisplayFormat}
                 />
             )}
 
+                
                 </div>
                 <div className="fullpost-engagement-container">
                     <div className="fullpost-top">
                         <div className="person-info">
                             <div className="person-info-left">
-                                {/* <Link to={`/profile/${post._creator?.username}`} > */}
-                                    <img className="person-info-img" src="https://images.unsplash.com/photo-1665686374221-1901faa9f3ad?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80" alt="" />
-                                {/* </Link> */}
+                                <Link to={`/profile/${post?.user?.id}`} >
+                                    <img className="person-info-img" src={post?.user?.avatar} alt="" />
+                                </Link>
                                 <span className="person-info-name">
-                                    Username
+                                    {post?.user?.first_name}
                                 </span>
                                
                             </div>
                             <div className="person-info-right">
-                                {/* {post._creator.username === currentUser.username && ( */}
+                                {post?.user.email === profile.email && (
                                     <>
-                                    {/* {
+                                    {
                                         isHovered ? (
                                             <RemoveCircleRoundedIcon 
-                                            // onMouseEnter={()=>setIsHovered(true)}
-                                            // onMouseLeave={()=>setIsHovered(false)}    
-                                            // onClick={handleIcon}
+                                            onMouseEnter={()=>setIsHovered(true)}
+                                            onMouseLeave={()=>setIsHovered(false)}    
+                                            onClick={handleIcon}
                                             style={{
                                             color: 'red', 
                                             fontSize: '30px', 
@@ -343,9 +351,9 @@ return(
                                             />
                                         ) : (
                                             <DeleteForeverRoundedIcon 
-                                            // onMouseEnter={()=>setIsHovered(true)}
-                                            // onMouseLeave={()=>setIsHovered(false)}    
-                                            // onClick={handleIcon}
+                                            onMouseEnter={()=>setIsHovered(true)}
+                                            onMouseLeave={()=>setIsHovered(false)}    
+                                            onClick={handleIcon}
                                             style={{
                                             color: 'white', 
                                             fontSize: '30px', 
@@ -354,26 +362,26 @@ return(
                                         }}
                                             />
                                         )
-                                    } */}
+                                    }
                                     </>
-                                {/* )} */}
-                                {/* {post._creator?.email !== currentUser.email && ( */}
+                                )} 
+                                {post?.user.email !== profile.email && (
                                 <button className="post-info-button"
                                 // onClick={handleFollow}
                                 >
-                                    Follow
+                                    {following?.length > 0 ? 'Unfollow' : 'Follow'}
                                     </button>
-                                {/* )} */}
+                                )}
                             </div>
                         </div>
                     </div>
                     <div className="fullpost-bottom">
                         <div className="fullpost-caption-container">
                             <span className="fullpost-caption">
-                                Post Description
+                                {post?.description}
                             </span>
                             <span className="fullpost-time">
-                                Created at
+                                Created at {format(post?.created_at)}
                             </span>
                         </div>
                         <div className="fullpost-engagement">

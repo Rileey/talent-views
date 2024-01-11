@@ -69,6 +69,7 @@ const Register = () => {
     const form = useRef();
     const checkBtn = useRef();
     const [show, setShow] = useState(false)
+    const [open, setOpen] = useState(false)
     const [first_name, setFirstname] = useState("");
     const [last_name, setLastname] = useState("");
     const [email, setEmail] = useState("");
@@ -113,6 +114,10 @@ const Register = () => {
     const handleShowHide = () => {
         setShow(!show)
     }
+
+    const handleShowHide1 = () => {
+      setOpen(!open)
+  }
   
     const handleRegister = (e) => {
       e.preventDefault();
@@ -121,14 +126,8 @@ const Register = () => {
       setSuccessful(false);
   
       form.current.validateAll();
-  
-      if (confirmpassword === password) {
-        return (
-        <div className="labels" role="alert">
-          The password does not match.
-        </div> 
-        )
-    } else if (checkBtn.current.context._errors.length === 0) {
+
+    if (checkBtn.current.context._errors.length === 0) {
         dispatch(register(first_name, last_name, email, phone_number, password))
           .then(() => {
             navigate("/success");
@@ -220,7 +219,7 @@ const Register = () => {
               <div className="form-group">
                 <label htmlFor="password" className='labels'>Password</label>
                 <Input
-                  type={show ? "text" : "password"}
+                  type={open ? "text" : "password"}
                   className="form-control"
                   name="password"
                   placeholder='Please input your password'
@@ -229,10 +228,10 @@ const Register = () => {
                   validations={[required, vpassword]}
                 />
                  {
-                    show ? (
-                         <span className='visibility' onClick={handleShowHide}><Visibility /></span>
+                    open ? (
+                         <span className='visibility' onClick={handleShowHide1}><Visibility /></span>
                     ) : (
-                        <span className='visibility' onClick={handleShowHide}><VisibilityOff /></span>
+                        <span className='visibility' onClick={handleShowHide1}><VisibilityOff /></span>
                      )
                 }
               </div>

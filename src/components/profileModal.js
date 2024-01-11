@@ -8,17 +8,19 @@ import '../css/profilemodal.modules.css'
 import picture from '../images/stockphoto.jpeg'
 import CameraAltRoundedIcon from '@mui/icons-material/CameraAltRounded';
 import { AuthContext } from '../authContext/authContext';
+import { API_URL } from '../services/user.service';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUser } from '../Redux/actions/user';
 
 
 
 
 
 
-const Modal = ({closeModal, profilePicture}) => {
+const Modal = ({closeModal}) => {
     const [show, setShow] = useState(false)
     const [show2, setShow2] = useState(false)
     const [show3, setShow3] = useState(false)
-    const { user, error } = useContext(AuthContext)
     const [image, setImage] = useState({})
     const [person, setPerson] = useState({})
     const [message, setMessage] = useState('')
@@ -29,7 +31,12 @@ const Modal = ({closeModal, profilePicture}) => {
     const [submitted, setSubmitted] = useState(false)
     const [profile, setProfile] = useState([])
 
-// console.log(user.email, '-----richmond-----')
+    const dispatch = useDispatch();
+    const user = useSelector(state => state?.user?.user);
+
+    useEffect(() => {
+        dispatch(getUser());
+    }, []);
 
 
     const handleShowHide = () => {
@@ -51,16 +58,15 @@ const Modal = ({closeModal, profilePicture}) => {
 
     useEffect(() =>{
         const getPerson = async () => {
-            const res = await axios.get(`/users/find/${user._id}`)
-            setProfile(res.data)
-            console.log(res.data)
+            const res = await axios.get(`${API_URL}user/${user.id}`)
+            setProfile(res?.data?.data?.user)
         }
         getPerson()
-    }, [user._id])
+    }, [user.id])
 
-    if (image === {}) {
-        return null
-    }
+    // if (image === {}) {
+    //     return null
+    // }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -80,15 +86,12 @@ const Modal = ({closeModal, profilePicture}) => {
             } else {
                 setMessage('Confirm your password')
             }
-            
-            
-            
             try {
             if (person.newPassword !== person.confirmPassword) {
                 setMessage('Passwords do not match')
                 setLoading(false)
             } else {
-                await axios.put(`/users/${user._id}`, data )
+                await axios.put(`${API_URL}user/${user.id}`, data )
                 setMessage('Password has been changed')
                 setLoading(false)
                 window.location.reload()
@@ -138,19 +141,10 @@ const Modal = ({closeModal, profilePicture}) => {
                     </div>
                     </div>
                 </div>
-                {
-                    loading ? (
                 <div className="end" >
-                    <div class="loader"></div>
-                    <input type="button" value="Updating..." className="update" onClick={handleSubmit}/>
+                    {loading && <div class="loader"></div>}
+                    <input type="button" value={loading ? "Updating..." : "Update"} className="update" onClick={handleSubmit}/>
                 </div>
-                    ) : (
-                <div className="end" >
-                    {/* <div class="loader"></div> */}
-                    <input type="button" value="Update" className="update" onClick={handleSubmit}/>
-                </div>
-                    )
-                }
             </form>
         </div>
     </>)

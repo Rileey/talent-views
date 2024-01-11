@@ -1,5 +1,6 @@
 
 .film-container {
+    height: 100vh;
     background-color: #000;
     padding-bottom: 20px;
 }

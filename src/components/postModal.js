@@ -9,6 +9,8 @@ import Fullpost from './fullpost'
 import { AuthContext } from '../authContext/authContext';
 import { withRouter, useNavigate, useParams} from 'react-router-dom';
 import { useLocation } from "react-router-dom"
+import { API_URL } from '../services/user.service';
+import authHeader from '../services/auth-header';
 
 
 
@@ -21,24 +23,28 @@ const PostModal = ({
     const location = useLocation()
     const history = useNavigate();
     const {id} = useParams()
-    const { user } = useContext(AuthContext)
     const [post, setPost] = useState([])
+    const [profile, setProfile] = useState({})
 
 
-    // useEffect(()=> {
-    //     const getPost = async () => {
-    //         const { data } = await axios.get(`/posts/find/${id}`)
-    //         if (data.getOnePost) {
-    //           return setPost(data.getOnePost)
-    //         } 
-    //     }
-    //     getPost()
-        
-    // }, [id])
+    useEffect(()=> {
+        const getPost = async () => {
+            const { data } = await axios.get(`${API_URL}post/${id}`)
+            setPost(data?.data?.post)
+        }
+        getPost()
 
-    // if (post.length === 0) {
-    //   return null
-    // }
+        const getProfile = async () => {
+          const {data} = await axios.get(API_URL + "user/profile", { headers: authHeader() })
+          setProfile(data?.data)
+        }
+        getProfile()
+    }, [id])
+
+    if (post.length === 0) {
+      return null
+    }
+    console.log(post, posts, profile)
 
 
 
@@ -55,7 +61,7 @@ const backArrow = () => {
     currentPostIndex--;
     // console.log('currentPostIndex', currentPostIndex, post._id);
 
-    history(`/community/${post._id}`)
+    history(`/community/${post.id}`)
     setPost(posts[currentPostIndex]);
     
   }
@@ -63,8 +69,7 @@ const backArrow = () => {
 
 const forwardArrow = () => {
   
-  let previousPostId = post._id;
-  // console.log(post, 'post', posts, 'posts')
+  let previousPostId = post.id;
   let previousPostIndex = 0;
   previousPostIndex = posts.findIndex(
     (postData, index) => { 
@@ -87,11 +92,11 @@ const forwardArrow = () => {
         
       }
       // history(`/community/${postData._id}`)
-      return postData._id === previousPostId
+      return postData.id === previousPostId
 }
   );
 
-  history(`/community/${post._id}`)
+  history(`/community/${post?.id}`)
 
 
 
@@ -122,8 +127,8 @@ const forwardArrow = () => {
                         }}> X </button>
                     </div>
                    <Fullpost
-                    // user={user}
-                    //  post={post}
+                    profile={profile}
+                    post={post}
                      />
                 </div>
             </div>

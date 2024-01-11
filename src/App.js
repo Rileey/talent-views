@@ -27,20 +27,25 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/signin' element={<Login />} />
+          <Route path='/' element={user ? <Home /> : <Navigate to="/signin" />} />
+          <Route path='/register' element={user ? <Navigate to="/" /> : <Register />} />
+          <Route path='/signin' element={user ? <Navigate to="/" /> : <Login />} />
           <Route path='/success' element={<SuccessPage />} />
-          <Route path='/movies' element={<Home type='Movies' />} />
-          <Route path='/search' element={<Search />} />
-          <Route path='/series' element={<Home type='Series' />} />
-          <Route path='/timeline' element={<Dashboard />} />
-          <Route path='/community/*' element={<Community />} />
-          <Route path='/profile/:username/*' element={<Profile />} />
-          <Route path='/content/watch/:id' element={<Watch />} />
-          <Route path='/content/:id' element={<ContentDescription />} />
-          <Route path='/profile/user/*' element={<PostModal />} />
-          <Route path='/account/:username' element={<Account />} />
+          {user && (
+            <>
+            <Route path='/movies' element={<Home type='Movie' />} />
+            <Route path='/search' element={<Search />} />
+            <Route path='/series' element={<Home type='Series' />} />
+            <Route path='/timeline' element={<Dashboard />} />
+            <Route path='/community/*' element={<Community />} />
+            <Route path='/profile/:id/*' element={<Profile />} />
+            <Route path='/content/watch/:id' element={<Watch />} />
+            <Route path='/content/:id' element={<ContentDescription />} />
+            <Route path='/profile/user/*' element={<PostModal />} />
+            <Route path='/account/:first_name' element={<Account />} />
+            </>
+          )}
+          
         </Routes>
       </BrowserRouter>
     </>

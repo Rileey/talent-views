@@ -155,25 +155,27 @@ const Watch = () => {
     : `-${format(duration - currentTime)}`;
     const totalDuration = format(duration)
 
+    const user = JSON.parse(localStorage.getItem('user'));
+  const token = user?.data?.token
+  const config = {
+    headers:{
+      'Authorization': `Bearer ${token}`
+    }
+  };
     
 
-    // useEffect(() => {
-    //     const getContent = async () => {
-    //         try {
-    //             const { data } = await axios.get(`/content/find/${params.id}`, {
-    //                 headers: {
-    //                     token: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYzQ1ZGJhNWQ5ZGY1NmEzMzhhNTFmNCIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2NDA2MzIyMjYsImV4cCI6MTY0MzIyNDIyNn0.FliBS9psdYuSEbr2OHwGf4iurw4ZjDYUJlbDggfnv1M'
-    //                 }
-    //             })
-    //             setFilm(data)
-    //             setVideo(data.videoHD[0])
-    //         } catch (err) {
-    //             console.log(err)
-    //         }
-
-    //     }
-    //     getContent()
-    // }, [params.id])
+    useEffect(() => {
+        const getMovie = async () => {
+            try {
+                const {data} = await axios.get(`http://127.0.0.1:8000/api/moviefile/${params.id}`, config)
+                setVideo(data?.data?.movieFile)
+                window.scrollTo(0, 0);
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getMovie()
+    }, [params.id])
 
 
 
@@ -182,8 +184,9 @@ const Watch = () => {
             <div className="back">
                 <Link
                 className="watchLink" 
-                to={`/`}
-                // {`/content/${film._id}`} 
+                to=
+                // {`/`}
+                {`/content/${video?.movie_id}`} 
                 style={
                     {
                         textDecoration: 'none',
@@ -220,9 +223,9 @@ const Watch = () => {
 
                 { 
                     orientation && (
-                        <ReactPlayer 
+            <ReactPlayer 
             ref={playerRef}
-            url={video.video} 
+            url={video?.video} 
             playing={playing} 
             muted={muted}
             volume={volume}
@@ -248,9 +251,9 @@ const Watch = () => {
                       ? (
                     <div className="details">
                         <span className='watching'>Keep Watching</span>
-                        <span className='overlay-title'>film title</span>
-                        <span className='director'>Directed by Isreal</span>
-                        <span className="overlay-subtitle">film description</span>
+                        <span className='overlay-title'>{video?.name}</span>
+                        <span className='director'>Directed by {video?.director}</span>
+                        <span className="overlay-subtitle">{video?.description}</span>
                     </div>
                       ) : (null)}}
                       </Media>
@@ -258,7 +261,7 @@ const Watch = () => {
                     )}
             </div>
 
-            {/* <PlayerControls
+            <PlayerControls
             film={film}
             ref={controlsRef}
             onPlayPause={handlePlayPause}
@@ -279,7 +282,7 @@ const Watch = () => {
             elapsedTime={elapsedTime}
             totalDuration={totalDuration}
             onChangeDisplayFormat={handleChangeDisplayFormat}
-            /> */}
+            />
            
             </div>
             </div>

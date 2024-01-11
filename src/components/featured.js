@@ -8,18 +8,37 @@ import { Link } from 'react-router-dom'
 import '../css/featured.modules.css'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/opacity.css'
+import authHeader from '../services/auth-header'
 
-const Featured = ({type, setGenre, listdata, film}) => {
+const Featured = ({type, setGenre, listdata, film, config}) => {
 
 
-    const [content, setContent] = useState({});
+    const [random, setRandom] = useState([]);
     const [trailer, setTrailer] = useState({});
     const [imagee, setImagee] = useState({})
     const [video, setVideo] = useState({})
     const [isClicked, setIsClicked] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
+
+    function time_convert(num)
+    { 
+    const hours = Math.floor(num / 60).toFixed(2);  
+    const minutes = num % 60;
+    return `${hours}:${minutes}`;         
+    }
     
 
+    useEffect(()=> {
+        const getRandom = async () => {
+            try {
+                const {data} = await axios.get('http://127.0.0.1:8000/api/movie/random?type='+ type, { headers: authHeader() })
+                setRandom(data?.movie)
+            } catch (err) {
+                console.log(err) 
+            }
+        }
+        getRandom()
+    }, [type])
     // useEffect(() => {
     //     const getRandomContent = async () => {
     //         try {
@@ -46,11 +65,15 @@ const Featured = ({type, setGenre, listdata, film}) => {
         onMouseEnter={()=> setIsHovered(true)} 
         onMouseLeave={()=> setIsHovered(false)}
         >
-            {/* {type && ( */}
+            {type && (
                 <div className="category">
-                    <span>Movies</span>
-                    <select name='genre' id='genre'>
-                        <option> Genre</option>
+                    <span>{type === 'Movie' ? 'Movie' : 'Series'}</span>
+                    <select name='genre' id='genre' onChange={(e)=> {
+                        setGenre(e.target.value)
+                        console.log(e.target.value)
+                    }}>
+                        <option value='Drama'>Drama</option>
+                        <option value='Documentary'>Action</option>
                         <option value='Adventure'>Adventure</option>
                         <option value='Comedy'>Comedy</option>
                         <option value='Crime'>Crime</option>
@@ -61,16 +84,15 @@ const Featured = ({type, setGenre, listdata, film}) => {
                         <option value='Sci-fi'>Sci-fi</option>
                         <option value='Thriller'>Thriller</option>
                         <option value='Cartoons'>Cartoons</option>
-                        <option value='Drama'>Drama</option>
                         <option value='Documentary'>Documentary</option>
                     </select>
                 </div>
-            {/* )} */}
+            )}  
 
     {!isHovered ? (
             <div 
             className="featured-image"
-            style={{backgroundImage: `linear-gradient(to bottom, transparent, #000000), url(https://images.unsplash.com/photo-1665686374221-1901faa9f3ad?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80)`, objectFit: 'cover'}}>
+            style={{backgroundImage: `linear-gradient(to bottom, transparent, #000000), url('${random?.thumbnail}')`, objectFit: 'cover'}}>
 
             </div>
     ) :
@@ -78,22 +100,22 @@ const Featured = ({type, setGenre, listdata, film}) => {
                 <>
             <video className="featured-image-2"
             width="560" height="315" 
-            src={film?.episodes[0]?.video}
+            src={random?.episodes[0]?.video}
             autoPlay={true} 
             loop />
             </>
             )}
             
             <div className="info">
-                <span className="film-title">{film?.name}</span>
-                <span className="description">{film?.description}</span>
+                <span className="film-title">{random?.name}</span>
+                <span className="description">{random?.description}</span>
                 <span className="genre"></span>
-                <span className="rated">Drama<b>+{film?.age_rating}</b></span>
+                <span className="rated">Drama<b>+{random?.age_rating}</b></span>
                 {isClicked ? 
                 <div className="more">
-                    <span>Directed By {film?.director}</span> 
-                    <span>{film?.year}</span>
-                    <span>{film?.episodes[0]?.duration}</span>
+                    <span>Directed By {random?.director}</span> 
+                    <span>{random?.year}</span>
+                    <span>{time_convert(random?.episodes[0]?.duration)}hr</span>
                     {/* <Link to={`/content/${content._id}`} style={{textDecoration: 'none', color: 'white',display: 'flex', alignItems: 'center'}}> */}
                         <span className='somemore'>more...</span>
                     {/* </Link> */}

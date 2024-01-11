@@ -16,9 +16,8 @@ const Contentlistitem = ({upload, item}) => {
                 onMouseOver={()=>setIshovered(true)}
                 onMouseLeave={()=>setIshovered(false)}
                 >
-                    {/* <p>{item.name}</p> */}
                 <video
-                src="https://www.pexels.com/video/people-with-umbrella-walking-on-the-bridge-8242999/" width="640" height="360"
+                src={item?.url} width="640" height="360"
                 alt="" 
                 autoPlay="true"
                 muted
@@ -31,12 +30,11 @@ const Contentlistitem = ({upload, item}) => {
                 onMouseLeave={()=>setIshovered(false)}
                 >
                     <video
-                    src="https://www.pexels.com/video/people-with-umbrella-walking-on-the-bridge-8242999/" width="640" height="360"
+                    src={item?.url} width="640" height="360"
                     alt=""
                     loop
                     // autoPlay="false"
                     type="video/mp4"/>
-                    <p>{item.name}</p>
                     <PlayArrowRoundedIcon
                     style={{
                         fontSize: '50px',
@@ -51,7 +49,6 @@ const Contentlistitem = ({upload, item}) => {
             
             }
         </div>
-        // </Link>
     )
 }
 

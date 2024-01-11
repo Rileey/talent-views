@@ -20,78 +20,30 @@ const Navbar = ({ searchTerm,
 }) => {
     const history = useNavigate()
     const input = setSearchTerm
-
-    // const username  = useParams();
-    // console.log(username)
-    
-
-    const debouncedSearch = useDebounce(searchTerm,
-        //  500
-         )
+    const debouncedSearch = useDebounce(searchTerm)
     const param = {q: debouncedSearch}
+    const {user} = useContext(AuthContext)
     const [isScrolled, setisScrolled] = useState(false);
-    const [movie, setMovie] = useState([]);
-    const [user, setUser] = useState([])
-    // const {dispatch, user: userInfo} = useContext(AuthContext)
+    const dispatch = useDispatch()
+  
+    const profile = user?.data?.user
     const searchRef = useRef(null)
-    const dispatch = useDispatch();
-    
+
 
     window.onscroll = () => {
         setisScrolled(window.pageYOffset === 0 ? false : true);
         return () => (window.onscroll = null)
     }
 
-    // useEffect(()=> {
-    //     const getUser = async () => {
-    //         const res = await axios.get(`/users/find?username=${userInfo.username}`, {
-    //             headers: {
-    //                 token: userInfo.accessToken
-    //             }
-    //         })
-    //         setUser(res.data)
-    //     }
-    //     getUser()
-    // }, [userInfo.username, userInfo.accessToken])
-
-    
-    
-//     useEffect(() => {
-//       const getMovie = async () => {
-//           const res = await axios.get('/movies', {
-//               headers: {
-//                   token: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYzQ1ZGJhNWQ5ZGY1NmEzMzhhNTFmNCIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2NDA2MzIyMjYsImV4cCI6MTY0MzIyNDIyNn0.FliBS9psdYuSEbr2OHwGf4iurw4ZjDYUJlbDggfnv1M'
-//               }
-//           })
-//           setMovie(res.data)
-//       }
-//       getMovie()
-//   }, [])
-
-//   if (user.length === 0) {
-//       return null
-//   }
-
   function setClicked() {
-      dispatch(logout())
+    dispatch(logout())
       history('/register')
   }
-
-//   const handleFilter = (event) => {
-//         event.preventDefault()
-//         history({
-//             // pathname: '/search',
-//             search: `?${createSearchParams(param)}`
-//         })
-
-//         input(event.target.value);
-//     // }
-    
-//     }
 
     const handleFocus = (e) => {
         e.preventDefault()
         searchRef.current.style.visibility = 'hidden';
+        searchRef.current.style.display = 'none';
         history('/search')
         
     }
@@ -99,10 +51,6 @@ const Navbar = ({ searchTerm,
     const handleSearch = () => {
         history('/search')
     }
-    
-    
-    
-  
 
     return (
         <div className={isScrolled ? 'scrolled' : 'navbar'}>
@@ -110,24 +58,25 @@ const Navbar = ({ searchTerm,
                 <div className="nav-left">
                 <Link to='/' style={{textDecoration: 'none', color: 'white', marginRight: '20px'}}>
                     <span className="logo">talentcroft</span>
-                    </Link>
-
-                    
-                        <div className="dropdown">
+                </Link>
+                    <div className="dropdown">
                         <span style={{textDecoration: 'none', color: 'white', marginLeft: '20px'}}><KeyboardArrowDownOutlined/></span>
-                        <div className="dropdown-content">
-                        <Link to='/' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
+                    <div className="dropdown-content">
+                    <Link to='/' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
                         <p>Home</p>
-                        </Link>
-                        <Link to='/series' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
+                    </Link>
+                    <Link to='/series' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
                         <p>Shows</p>
-                        </Link>
-                        <Link to='/movies' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
+                    </Link>
+                    <Link to='/movies' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
                         <p>Movies</p>
-                        </Link>
-                        {/* <Link to='/community' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'> */}
+                    </Link>
+                    <Link to='/community' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
                         <p>Community</p>
-                        {/* </Link> */}
+                    </Link>
+                    <Link to='/search' style={{textDecoration: 'none', color: 'white', padding: '10px 0', marginLeft: '50px'}} className='mennu'>
+                        <p>Search</p>
+                    </Link>
                         </div>
                         </div>
 
@@ -144,6 +93,9 @@ const Navbar = ({ searchTerm,
                     <Link to='/community' style={{textDecoration: 'none', color: 'white', marginRight: '20px'}} className='mennu'>
                         <span>Community</span>
                     </Link>
+                    <Link to='/search' style={{textDecoration: 'none', color: 'white', marginRight: '20px'}} className='mennu'>
+                        <p>Search</p>
+                    </Link>
                     </div>
                 </div>
                 <div className="nav-right mennu" >
@@ -155,18 +107,15 @@ const Navbar = ({ searchTerm,
           ? (
                     <div className="search-s" >
                         {/* <SearchBar onClick={handleSearch} /> */}
-                        <div className="search">
+                        {/* <div className="search">
                             <input className="searchs-input" type="text" name="" placeholder="Search..." id=""  
                             ref={searchRef} onClick={handleFocus}
                             />
-                        </div>
+                        </div> */}
                     </div> ) : (
                         <div className="search-s" >
                         
                         <div className="search">
-                            {/* <input className="searchs-input" type="text" name="" placeholder="Search..." id=""  
-                            ref={searchRef} onClick={handleFocus}
-                            /> */}
                             <SearchRoundedIcon ref={searchRef} onClick={handleFocus} />
                         </div>
                     </div> 
@@ -174,15 +123,15 @@ const Navbar = ({ searchTerm,
                       </Media>
                       
         </>
-                    {/* <Link to={`/profile/${userInfo.username}`} style={{textDecoration: 'none', color: 'white'}}> */}
-                        <img className="avatar" src={'../stockphoto.jpeg'} alt="" srcset="" />
-                    {/* </Link> */}
+                    <Link to={`/profile/${profile?.id}`} style={{textDecoration: 'none', color: 'white'}}>
+                        <img className="avatar" src={profile?.avatar || '../stockphoto.jpeg'} alt="" srcset="" />
+                    </Link>
                     <div className="profile">
                         <ArrowDropDown className='icon'/>
                         <div className="options">
-                            {/* <Link to={`/account/${user.username}`} style={{textDecoration: 'none', color: 'white'}}> */}
+                            <Link to={`/account/${profile.first_name}`} style={{textDecoration: 'none', color: 'white'}}>
                                 <span className='drop-option'>Account</span>
-                            {/* </Link> */}
+                            </Link>
                             <span className='drop-option' onClick={setClicked}>Logout</span>
                         </div>
                     </div>
